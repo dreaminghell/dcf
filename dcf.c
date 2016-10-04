@@ -96,7 +96,7 @@ void ifcall1_4_vop_get_st(void)
 {
 	/* vop_big_enable = 1 */
 	PCODE("vop_big_enable = 1;\n");
-	set_val(DATA_ADDR(vop_big_enable), 1);
+	set_val_sync(DATA_ADDR(vop_big_enable), 1);
 }
 
 void ifcall1_3_vop_get_st(void)
@@ -164,7 +164,7 @@ void ifcall2_4_vop_get_st(void)
 {
 	/* vop_big_enable = 1 */
 	PCODE("vop_lit_enable = 1;\n");
-	set_val(DATA_ADDR(vop_lit_enable), 1);
+	set_val_sync(DATA_ADDR(vop_lit_enable), 1);
 }
 
 void ifcall2_3_vop_get_st(void)
@@ -209,9 +209,9 @@ void vop_get_status(void)
 	*/
 
 	PCODE("vop_big_enable = 0;\n");
-	set_val(DATA_ADDR(vop_big_enable), 0);
+	set_val_sync(DATA_ADDR(vop_big_enable), 0);
 	PCODE("vop_lit_enable = 0;\n");
-	set_val(DATA_ADDR(vop_lit_enable), 0);
+	set_val_sync(DATA_ADDR(vop_lit_enable), 0);
 
 	if_flag(ifcond0_vop_get_st, ifcall1_1_vop_get_st);
 	if_flag(ifcond0_vop_get_st, ifcall2_1_vop_get_st);
@@ -341,24 +341,24 @@ void set_lcdc_type(void)
 {
 	if(_disp_type == SCREEN_MIPI) {
 		PCODE("vop_need_standby = 1;\n");
-		set_val(DATA_ADDR(vop_need_standby), 1);
+		set_val_sync(DATA_ADDR(vop_need_standby), 1);
 		PCODE("dclk_need_div = 0;\n");
-		set_val(DATA_ADDR(dclk_need_div), 0);
+		set_val_sync(DATA_ADDR(dclk_need_div), 0);
 	} else if (_disp_type == SCREEN_HDMI) {
 		PCODE("vop_need_standby = 0;\n");
-		set_val(DATA_ADDR(vop_need_standby), 0);
+		set_val_sync(DATA_ADDR(vop_need_standby), 0);
 		PCODE("dclk_need_div = 0;\n");
-		set_val(DATA_ADDR(dclk_need_div), 0);
+		set_val_sync(DATA_ADDR(dclk_need_div), 0);
 	} else if (_disp_type == SCREEN_RGB) {
 		PCODE("vop_need_standby = 1;\n");
-		set_val(DATA_ADDR(vop_need_standby), 1);
+		set_val_sync(DATA_ADDR(vop_need_standby), 1);
 		PCODE("dclk_need_div = 0;\n");
-		set_val(DATA_ADDR(dclk_need_div), 0);
+		set_val_sync(DATA_ADDR(dclk_need_div), 0);
 	} else if (_disp_type == SCREEN_EDP) {
 		PCODE("vop_need_standby = 0;\n");
-		set_val(DATA_ADDR(vop_need_standby), 0);
+		set_val_sync(DATA_ADDR(vop_need_standby), 0);
 		PCODE("dclk_need_div = 1;\n");
-		set_val(DATA_ADDR(dclk_need_div), 1);
+		set_val_sync(DATA_ADDR(dclk_need_div), 1);
 	}
 }
 void detect_lcdc_rgb(void)
@@ -422,9 +422,9 @@ void get_vop_lit_lcdc_type(void)
 void vop_get_lcdc_type(void)
 {
 	PCODE("vop_need_standby = 0;\n");
-	set_val(DATA_ADDR(vop_need_standby), 0);
+	set_val_sync(DATA_ADDR(vop_need_standby), 0);
 	PCODE("dclk_need_div = 0;\n");
-	set_val(DATA_ADDR(dclk_need_div), 0);
+	set_val_sync(DATA_ADDR(dclk_need_div), 0);
 	if_else_flag(ifcond_vop_big_en, get_vop_big_lcdc_type,
 				 get_vop_lit_lcdc_type);
 }
@@ -601,17 +601,17 @@ void vop_vbank_prolong_out(void)
 #endif
 void mipi_power_off(void)
 {
-	set_val(REG_ADDR(g_mipi0_reg, 1), 0);
-	set_val(REG_ADDR(g_mipi1_reg, 1), 0);
+	set_val_sync(REG_ADDR(g_mipi0_reg, 1), 0);
+	set_val_sync(REG_ADDR(g_mipi1_reg, 1), 0);
 }
 void mipi_power_on(void)
 {
-	set_val(REG_ADDR(g_mipi0_reg,1), 0);
-	set_val(REG_ADDR(g_mipi1_reg,1), 0);
-	set_val(REG_ADDR(g_mipi0_reg, 0x34/4), 0);
-	set_val(REG_ADDR(g_mipi1_reg, 0x34/4), 0);
-	set_val(REG_ADDR(g_mipi0_reg,1), 1);
-	set_val(REG_ADDR(g_mipi1_reg,1), 1);
+	set_val_sync(REG_ADDR(g_mipi0_reg,1), 0);
+	set_val_sync(REG_ADDR(g_mipi1_reg,1), 0);
+	set_val_sync(REG_ADDR(g_mipi0_reg, 0x34/4), 0);
+	set_val_sync(REG_ADDR(g_mipi1_reg, 0x34/4), 0);
+	set_val_sync(REG_ADDR(g_mipi0_reg,1), 1);
+	set_val_sync(REG_ADDR(g_mipi1_reg,1), 1);
 }
 
 void vop_fp_standby(unsigned int en, unsigned int vop)
@@ -619,7 +619,7 @@ void vop_fp_standby(unsigned int en, unsigned int vop)
 	if (en) {
 		if (vop) {
 			or_val(REG_ADDR(g_vop_lit_reg, VOP_SYS_CTRL1 / 4),
-				REG_ADDR(g_vop_big_reg, VOP_SYS_CTRL1 / 4), 1<<31);
+				REG_ADDR(g_vop_lit_reg, VOP_SYS_CTRL1 / 4), 1<<31);
 		} else {
 			or_val(REG_ADDR(g_vop_big_reg, VOP_SYS_CTRL1 / 4),
 				REG_ADDR(g_vop_big_reg, VOP_SYS_CTRL1 / 4), 1<<31);
@@ -627,7 +627,7 @@ void vop_fp_standby(unsigned int en, unsigned int vop)
 	} else {
 		if (vop) {
 			and_val(REG_ADDR(g_vop_lit_reg, VOP_SYS_CTRL1 / 4),
-				REG_ADDR(g_vop_big_reg, VOP_SYS_CTRL1 / 4), ~(1<<31));
+				REG_ADDR(g_vop_lit_reg, VOP_SYS_CTRL1 / 4), ~(1<<31));
 		} else {
 			and_val(REG_ADDR(g_vop_big_reg, VOP_SYS_CTRL1 / 4),
 				REG_ADDR(g_vop_big_reg, VOP_SYS_CTRL1 / 4), ~(1<<31));
@@ -660,11 +660,11 @@ void vop_dclk_div(void)
 	PCODE("dclk0_div_val = g_cru_reg->CRU_CLKSEL49_CON & 0xff;\n");
 	and_val(DATA_ADDR(dclk0_div_val), REG_ADDR(g_cru_reg, CRU_CLKSEL49_CON/4), 0xFF);
 	PCODE("g_cru_reg->CRU_CLKSEL49_CON = 0xff00ff;\n");
-	set_val(REG_ADDR(g_cru_reg, CRU_CLKSEL49_CON/4), 0xff00ff);
+	set_val_sync(REG_ADDR(g_cru_reg, CRU_CLKSEL49_CON/4), 0xff00ff);
 	PCODE("dclk1_div_val = g_cru_reg->CRU_CLKSEL50_CON & 0xff;\n");
 	and_val(DATA_ADDR(dclk1_div_val), REG_ADDR(g_cru_reg, CRU_CLKSEL50_CON/4), 0xFF);
 	PCODE("g_cru_reg->CRU_CLKSEL50_CON = 0xff00ff;\n");
-	set_val(REG_ADDR(g_cru_reg, CRU_CLKSEL50_CON/4), 0xff00ff);
+	set_val_sync(REG_ADDR(g_cru_reg, CRU_CLKSEL50_CON/4), 0xff00ff);
 }
 void vop_standby_en(void)
 {
@@ -714,9 +714,9 @@ void idle_msch(void)
 	PCODE("g_pmu_cru_reg->PMU_CRU_GATEDIS_CON0 = 0x3fffffff;\n");
 	set_val_sync(REG_ADDR(g_pmu_cru_reg, PMU_CRU_GATEDIS_CON0 / 4), 0x3fffffff);
 	PCODE("g_pmu_reg->PMU_BUS_IDLE_REQ |= (IDLE_REQ_MSCH1 | IDLE_REQ_MSCH0);\n");
-	set(REG_R0, REG_ADDR(g_pmu_reg, PMU_BUS_IDLE_REQ/4));
-	or_val(REG_ADDR(g_pmu_reg, PMU_BUS_IDLE_REQ/4), REG_R0,
-		   IDLE_REQ_MSCH0 | IDLE_REQ_MSCH1);
+	or_val(REG_R0, REG_ADDR(g_pmu_reg, PMU_BUS_IDLE_REQ/4),
+			IDLE_REQ_MSCH0 | IDLE_REQ_MSCH1);
+	set_sync(REG_ADDR(g_pmu_reg, PMU_BUS_IDLE_REQ/4), REG_R0);
 	unlock_reg(REG_R0);
 
 	PCODE("while(g_pmu_reg->PMU_BUS_IDLE_ST & (IDLE_MSCH1 | IDLE_MSCH1) != (IDLE_MSCH1 | IDLE_MSCH0));\n");
@@ -751,8 +751,8 @@ void ddr_set_pll(void)
 	set_val_sync(REG_ADDR(g_cru_reg, CRU_DPLL_CON3 /4), PLL_MODE(PLL_SLOW_MODE));
 	idle(24);
 	set_val_sync(REG_ADDR(g_cru_reg, CRU_DPLL_CON3 /4), PLL_POWER_DOWN(1));
-	set(REG_ADDR(g_cru_reg, CRU_DPLL_CON0 / 4), REG_ADDR(g_param_reg, PARAM_DPLL_CON0 / 4));
-	set(REG_ADDR(g_cru_reg, CRU_DPLL_CON1 / 4), REG_ADDR(g_param_reg, PARAM_DPLL_CON1 / 4));
+	set_sync(REG_ADDR(g_cru_reg, CRU_DPLL_CON0 / 4), REG_ADDR(g_param_reg, PARAM_DPLL_CON0 / 4));
+	set_sync(REG_ADDR(g_cru_reg, CRU_DPLL_CON1 / 4), REG_ADDR(g_param_reg, PARAM_DPLL_CON1 / 4));
 	set_val_sync(REG_ADDR(g_cru_reg, CRU_DPLL_CON3 /4), PLL_POWER_DOWN(0));
 	idle(24);
 	while_zero(REG_ADDR(g_cru_reg, CRU_DPLL_CON2 / 4), 1u << 31);
@@ -813,11 +813,11 @@ void main() {
 
 	/* cci idle req stall */
 	PCODE("cci idle req stall\n");
-	set_val(REG_ADDR(g_grf_reg, GRF_SOC_CON0 / 4), 0xffffffff);
-	set_val(REG_ADDR(g_grf_reg, GRF_SOC_CON1 / 4), 0xffffffff);
-	set_val(REG_ADDR(g_grf_reg, GRF_SOC_CON2 / 4), 0xffffffff);
-	set_val(REG_ADDR(g_grf_reg, GRF_SOC_CON3 / 4), 0xffffffff);
-	set_val(REG_ADDR(g_grf_reg, GRF_SOC_CON4 / 4), 0x70007000);
+	set_val_sync(REG_ADDR(g_grf_reg, GRF_SOC_CON0 / 4), 0xffffffff);
+	set_val_sync(REG_ADDR(g_grf_reg, GRF_SOC_CON1 / 4), 0xffffffff);
+	set_val_sync(REG_ADDR(g_grf_reg, GRF_SOC_CON2 / 4), 0xffffffff);
+	set_val_sync(REG_ADDR(g_grf_reg, GRF_SOC_CON3 / 4), 0xffffffff);
+	set_val_sync(REG_ADDR(g_grf_reg, GRF_SOC_CON4 / 4), 0x70007000);
 
 	/* IDLE MSCH */
 	PCODE("IDLE_MSCH\n");
@@ -825,16 +825,15 @@ void main() {
 	vop_vbank_prolong_in();
 
 	lock_reg(REG_R0);
-	set(REG_R0, REG_ADDR(g_param_reg, PARAM_FREQ_SELECT / 4));
-	or_val(REG_R0, REG_R0, (((0x3 << 4) | (1 << 2) | 1) << 16) |
-			(1 << 2) | 1);
-	set(REG_ADDR(g_cic_reg, CIC_CTRL0 / 4), REG_R0);
+	or_val(REG_R0, REG_ADDR(g_param_reg, PARAM_FREQ_SELECT / 4),
+		(((0x3 << 4) | (1 << 2) | 1) << 16) | (1 << 2) | 1);
+	set_sync(REG_ADDR(g_cic_reg, CIC_CTRL0 / 4), REG_R0);
 	unlock_reg(REG_R0);
 	while_zero(REG_ADDR(g_cic_reg, CIC_STATUS0 / 4), 1 << 2);
 
 	ddr_set_pll();
 
-	set_val(REG_ADDR(g_cic_reg,CIC_CTRL0 / 4 ), 0x20002);
+	set_val_sync(REG_ADDR(g_cic_reg,CIC_CTRL0 / 4 ), 0x20002);
 
 	while_zero(REG_ADDR(g_cic_reg, CIC_STATUS0 / 4), 1 << 0);
 
